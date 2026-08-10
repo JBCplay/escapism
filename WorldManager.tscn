@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://g0w60453uwac"]
+
+[ext_resource type="Script" uid="uid://kgd8tglj53aq" path="res://world_manager.gd" id="1_41u3f"]
+[ext_resource type="PackedScene" uid="uid://dtmmcr3gb7h53" path="res://HexTemplate.tscn" id="2_idisu"]
+
+[sub_resource type="PhysicalSkyMaterial" id="PhysicalSkyMaterial_idisu"]
+
+[sub_resource type="Sky" id="Sky_fpysk"]
+sky_material = SubResource("PhysicalSkyMaterial_idisu")
+
+[sub_resource type="Environment" id="Environment_hxpwf"]
+background_mode = 2
+sky = SubResource("Sky_fpysk")
+ambient_light_source = 3
+ambient_light_energy = 1.2
+
+[node name="WorldManager" type="Node3D" unique_id=412159056]
+script = ExtResource("1_41u3f")
+hex_template = ExtResource("2_idisu")
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=400105195]
+transform = Transform3D(-1, 8.74228e-08, 3.8213718e-15, 0, -4.37114e-08, 1.0000002, 8.742278e-08, 1.0000002, 4.37114e-08, 0, 7.5, 0)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=679115716]
+transform = Transform3D(0.8660254, 0.43301272, -0.24999999, 0, 0.49999997, 0.86602545, 0.5, -0.75, 0.43301266, 0, 20, 0)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1882561354]
+environment = SubResource("Environment_hxpwf")
