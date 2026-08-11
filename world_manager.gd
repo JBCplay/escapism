@@ -98,6 +98,19 @@ func obter_no_lru() -> int:
 			index_mais_velho = i
 	return index_mais_velho
 
+func distancia_hex(q1: int, r1: int, q2: int, r2: int) -> int:
+	var s1 = -q1 - r1
+	var s2 = -q2 - r2
+	return max(abs(q1 - q2), max(abs(r1 - r2), abs(s1 - s2)))
+
+func reset_total_memoria():
+	print("[SISTEMA] Salto longo detectado (Teleporte/Respawn). Resetando memória visual...")
+	for i in range(HASH_SIZE):
+		cache_estatica[i]["ativa"] = false
+		cache_estatica[i]["pool_index"] = -1
+	for no in lru_pool_nodes:
+		no.visible = false
+
 # --- INTELIGÊNCIA TOPOLÓGICA ---
 func obter_requisitos_vizinhos(q: int, r: int) -> Array:
 	var req = [LIVRE, LIVRE, LIVRE, LIVRE, LIVRE, LIVRE]
@@ -255,6 +268,7 @@ func world_to_hex(pos_x: float, pos_z: float) -> Vector2i:
 	return Vector2i(int(q_round), int(r_round))
 
 # --- O SENSOR DE MOVIMENTO ---
+# --- O SENSOR DE MOVIMENTO ---
 func _process(_delta):
 	if not has_node("Boxxie"):
 		return
@@ -263,9 +277,19 @@ func _process(_delta):
 	var hex_atual = world_to_hex(pos_boxxie.x, pos_boxxie.z)
 	
 	if hex_atual.x != jogador_q or hex_atual.y != jogador_r:
+		# Mede a distância entre o hexágono antigo e o novo
+		var salto = distancia_hex(jogador_q, jogador_r, hex_atual.x, hex_atual.y)
+		
 		jogador_q = hex_atual.x
 		jogador_r = hex_atual.y
 		tick_global += 1
 		
-		limpar_anel_de_descarte(jogador_q, jogador_r, RAIO_NEVOA + 1)
+		# A mágica do roteamento de performance:
+		if salto == 1:
+			# Jogabilidade normal: Otimização suprema usando o seu Anel
+			limpar_anel_de_descarte(jogador_q, jogador_r, RAIO_NEVOA + 1)
+		else:
+			# Edge Case (Teleporte): Limpa tudo da RAM instantaneamente
+			reset_total_memoria()
+			
 		gerar_visao_radial(jogador_q, jogador_r, RAIO_NEVOA)
