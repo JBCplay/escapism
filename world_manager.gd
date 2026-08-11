@@ -1,9 +1,31 @@
 extends Node3D
 
+# --- CARREGAMENTO DAS MALHAS (.tres) ---
+var malha_raso = preload("res://raso.tres")
+var malha_parede = preload("res://parede.tres")
+var malha_rampa = preload("res://rampa.tres")
+
 # --- CONFIGURAÇÕES DO MOTOR ---
 const HASH_SIZE = 256
 const RAIO_NEVOA = 4
 const LRU_CAPACITY = 64 
+const HEX_RAIO = 2.5 # Novo tamanho do tile
+
+const LIVRE = -1
+const RASO = 0
+const PAREDE = 1
+const RAMPA_CIMA = 2
+const RAMPA_BAIXO = 3
+
+# --- O TRADUTOR LÓGICO (O DNA DOS TILES) ---
+var definicao_tiles = {
+	0: [LIVRE, LIVRE, LIVRE, LIVRE, LIVRE, LIVRE],       # ID 0: CORINGA (Anomalia Topológica)
+	1: [RASO, RASO, RASO, RASO, RASO, RASO],             # ID 1: Clareira (Tudo aberto)
+	2: [RASO, RASO, PAREDE, RASO, RASO, PAREDE],         # ID 2: Encruzilhada (4 Caminhos)
+	3: [RASO, PAREDE, PAREDE, PAREDE, PAREDE, PAREDE],   # ID 3: Beco sem Saída (1 Caminho)
+	5: [RASO, PAREDE, PAREDE, RASO, PAREDE, PAREDE],     # ID 5: Corredor Reto
+	9: [RASO, RASO, PAREDE, PAREDE, PAREDE, PAREDE]      # ID 9: Curva Fechada
+}
 
 @export var hex_template: PackedScene
 
@@ -17,9 +39,10 @@ var jogador_r: int = 0
 var profundidade_expedicao: int = 0
 var tick_global: int = 0
 
-# Vetores Axiais (0: Leste, 1: Sudeste, 2: Sudoeste, 3: Oeste, 4: Noroeste, 5: Nordeste)
-var dir_q = [1, 0, -1, -1, 0, 1]
-var dir_r = [0, 1, 1, 0, -1, -1]
+# --- VETORES DIRECIONAIS (Anti-Horários, sincronizados com o Eixo Y da Godot) ---
+# 0: Leste, 1: Nordeste, 2: Noroeste, 3: Oeste, 4: Sudoeste, 5: Sudeste
+var dir_q = [1, 1, 0, -1, -1, 0]
+var dir_r = [0, -1, -1, 0, 1, 1]
 
 # --- INICIALIZAÇÃO ---
 func _ready():
@@ -27,6 +50,7 @@ func _ready():
 		cache_estatica.append({
 			"ativa": false,
 			"identidade": 0,
+			"rotacao": 0,
 			"pool_index": -1 
 		})
 		
@@ -62,53 +86,110 @@ func limpar_anel_de_descarte(jq: int, jr: int, raio: int):
 			anel_q += dir_q[i]
 			anel_r += dir_r[i]
 
-# --- GERENCIADOR DO OBJECT POOL (LRU) ---
 func obter_no_lru() -> int:
 	var index_mais_velho = 0
 	var menor_tick = tick_global + 1
-	
 	for i in range(LRU_CAPACITY):
 		var no = lru_pool_nodes[i]
-		if not no.visible:
-			return i 
-			
+		if not no.visible: return i 
 		var tick_no = no.get_meta("tick_uso")
 		if tick_no < menor_tick:
 			menor_tick = tick_no
 			index_mais_velho = i
-			
 	return index_mais_velho
 
-# --- GERAÇÃO PROCEDURAL (LOOK-AHEAD) ---
-func instanciar_sala_3d(q: int, r: int, index_hash: int, nova_identidade: int):
+# --- INTELIGÊNCIA TOPOLÓGICA ---
+func obter_requisitos_vizinhos(q: int, r: int) -> Array:
+	var req = [LIVRE, LIVRE, LIVRE, LIVRE, LIVRE, LIVRE]
+	for i in range(6):
+		var v_q = q + dir_q[i]
+		var v_r = r + dir_r[i]
+		var idx_v = calcular_index(v_q, v_r)
+		
+		if cache_estatica[idx_v]["ativa"]:
+			var dir_oposta = (i + 3) % 6
+			var v_id = cache_estatica[idx_v]["identidade"]
+			var v_rot = cache_estatica[idx_v]["rotacao"]
+			
+			var bordas_originais = definicao_tiles[v_id]
+			# Deslocamento circular para descobrir o que o vizinho está apontando para nós
+			var borda_que_aponta_pra_mim = bordas_originais[(dir_oposta - v_rot + 6) % 6]
+			req[i] = borda_que_aponta_pra_mim
+	return req
+
+func escolher_tile_compativel(requisitos: Array) -> Dictionary:
+	var candidatos = []
+	for id in definicao_tiles.keys():
+		# O Coringa não participa do sorteio natural, ele é estritamente a última esperança!
+		if id == 0: 
+			continue
+			
+		var bordas = definicao_tiles[id]
+		for rot in range(6):
+			var encaixou = true
+			for dir in range(6):
+				if requisitos[dir] != LIVRE:
+					var minha_borda_visual = bordas[(dir - rot + 6) % 6]
+					if minha_borda_visual != requisitos[dir]:
+						encaixou = false
+						break
+			if encaixou:
+				candidatos.append({"id": id, "rotacao": rot})
+				
+	if candidatos.size() > 0:
+		return candidatos.pick_random()
+	else:
+		print("[SISTEMA] Falha topológica crítica. Injetando Tile Curinga!")
+		return {"id": 0, "rotacao": 0} # O Curinga salva o dia!
+
+# --- GERAÇÃO VISUAL E LOOK-AHEAD ---
+func instanciar_sala_3d(q: int, r: int, index_hash: int, nova_identidade: int, rotacao: int):
 	var pool_idx = obter_no_lru()
 	var sala_node = lru_pool_nodes[pool_idx]
 	
 	cache_estatica[index_hash]["pool_index"] = pool_idx
 	sala_node.set_meta("tick_uso", tick_global)
 	
-	var espacamento = sqrt(3.0)
+	var espacamento = sqrt(3.0) * HEX_RAIO
 	var pos_x = espacamento * (q + float(r) / 2.0)
-	var pos_z = 1.5 * r
+	var pos_z = 1.5 * HEX_RAIO * r
 	
 	sala_node.position = Vector3(pos_x, 0, pos_z)
 	
+	# === A MÁGICA DA FÁBRICA DE BORDAS ===
+	var bordas = definicao_tiles[nova_identidade]
+	
+	for i in range(6):
+		var borda_node = sala_node.get_node("Pivo_" + str(i) + "/Borda_Mesh")
+		# Descobre qual lado lógico caiu neste pivô após girarmos a sala
+		var tipo_borda = bordas[(i - rotacao + 6) % 6]
+		
+		# === FÁBRICA DE BORDAS (Sem Raso para evitar Z-Fighting) ===
+		if tipo_borda == RASO:
+			borda_node.mesh = null # Não desenha ponte, usa a passagem livre entre os pisos
+		elif tipo_borda == PAREDE:
+			borda_node.mesh = malha_parede
+		elif tipo_borda == RAMPA_CIMA or tipo_borda == RAMPA_BAIXO:
+			borda_node.mesh = malha_rampa
+		else:
+			borda_node.mesh = null
+	
+	# Pinta o chão central só pra gente saber qual ID é qual
 	var material = StandardMaterial3D.new()
-	
-	if nova_identidade == 42:
-		material.albedo_color = Color(0.8, 0.1, 0.1) 
-		sala_node.scale = Vector3(1, 2, 1)
-		sala_node.rotation_degrees.y = 60
-	elif nova_identidade == 99:
-		material.albedo_color = Color(0.9, 0.8, 0.2) 
-		sala_node.scale = Vector3(1, 1, 1)
-		sala_node.rotation_degrees.y = 0
+	if nova_identidade == 0:
+		material.albedo_color = Color(0.0, 1.0, 1.0) # Ciano Brilhante: TILE CURINGA!
+	elif nova_identidade == 5:
+		material.albedo_color = Color(0.2, 0.2, 0.8) # Azul: Corredor Reto
+	elif nova_identidade == 9:
+		material.albedo_color = Color(0.8, 0.2, 0.8) # Roxo: Curva Fechada
+	elif nova_identidade == 2:
+		material.albedo_color = Color(0.2, 0.8, 0.2) # Verde: Encruzilhada
+	elif nova_identidade == 3:
+		material.albedo_color = Color(0.8, 0.2, 0.2) # Vermelho: Beco sem Saída
 	else:
-		material.albedo_color = Color(0.4, 0.4, 0.4) 
-		sala_node.scale = Vector3(1, 1, 1)
-		sala_node.rotation_degrees.y = 0
-	
-	sala_node.get_node("HexTile").material_override = material
+		material.albedo_color = Color(0.4, 0.4, 0.4) # Cinza: Clareira
+		
+	sala_node.get_node("Centro_Piso").material_override = material
 	sala_node.visible = true
 
 func gerar_visao_radial(jq: int, jr: int, raio: int):
@@ -117,7 +198,8 @@ func gerar_visao_radial(jq: int, jr: int, raio: int):
 		profundidade_expedicao += 1
 		cache_estatica[idx_centro]["ativa"] = true
 		cache_estatica[idx_centro]["identidade"] = 1
-		instanciar_sala_3d(jq, jr, idx_centro, cache_estatica[idx_centro]["identidade"])
+		cache_estatica[idx_centro]["rotacao"] = 0
+		instanciar_sala_3d(jq, jr, idx_centro, 1, 0)
 		
 	for rad in range(1, raio + 1):
 		var anel_q = jq + (dir_q[4] * rad)
@@ -129,17 +211,16 @@ func gerar_visao_radial(jq: int, jr: int, raio: int):
 				
 				if not cache_estatica[index]["ativa"]:
 					profundidade_expedicao += 1
+					
+					# GERAÇÃO GULOSA
+					var requisitos = obter_requisitos_vizinhos(anel_q, anel_r)
+					var escolha = escolher_tile_compativel(requisitos)
+					
 					cache_estatica[index]["ativa"] = true
+					cache_estatica[index]["identidade"] = escolha["id"]
+					cache_estatica[index]["rotacao"] = escolha["rotacao"]
 					
-					var nova_id = 1 
-					
-					if profundidade_expedicao % 15 == 0:
-						nova_id = 99 
-					elif profundidade_expedicao % 5 == 0:
-						nova_id = 42 
-						
-					cache_estatica[index]["identidade"] = nova_id
-					instanciar_sala_3d(anel_q, anel_r, index, cache_estatica[index]["identidade"])
+					instanciar_sala_3d(anel_q, anel_r, index, escolha["id"], escolha["rotacao"])
 					
 				else:
 					var pool_idx = cache_estatica[index]["pool_index"]
@@ -151,8 +232,11 @@ func gerar_visao_radial(jq: int, jr: int, raio: int):
 
 # --- CONVERSOR 3D PARA HEXAGONAL ---
 func world_to_hex(pos_x: float, pos_z: float) -> Vector2i:
-	var q_float = (sqrt(3.0) / 3.0 * pos_x - 1.0 / 3.0 * pos_z)
-	var r_float = 2.0 / 3.0 * pos_z
+	var px = pos_x / HEX_RAIO
+	var pz = pos_z / HEX_RAIO
+	
+	var q_float = (sqrt(3.0) / 3.0 * px - 1.0 / 3.0 * pz)
+	var r_float = 2.0 / 3.0 * pz
 	var s_float = -q_float - r_float
 	
 	var q_round = round(q_float)
@@ -172,24 +256,16 @@ func world_to_hex(pos_x: float, pos_z: float) -> Vector2i:
 
 # --- O SENSOR DE MOVIMENTO ---
 func _process(_delta):
-	# Garante que o Boxxie existe na cena antes de rastreá-lo
 	if not has_node("Boxxie"):
 		return
 		
-	# 1. Pega a posição física atual do Boxxie no mapa 3D
 	var pos_boxxie = $Boxxie.global_position
-	
-	# 2. Converte a posição 3D para a coordenada do hexágono onde ele está pisando
 	var hex_atual = world_to_hex(pos_boxxie.x, pos_boxxie.z)
 	
-	# 3. O Boxxie pisou em um hexágono diferente!
 	if hex_atual.x != jogador_q or hex_atual.y != jogador_r:
-		
-		# Atualiza a posição lógica do jogador no motor
 		jogador_q = hex_atual.x
 		jogador_r = hex_atual.y
 		tick_global += 1
 		
-		# Apaga o passado que ficou para trás da névoa e gera o novo horizonte!
 		limpar_anel_de_descarte(jogador_q, jogador_r, RAIO_NEVOA + 1)
 		gerar_visao_radial(jogador_q, jogador_r, RAIO_NEVOA)

@@ -1,12 +1,47 @@
 [gd_scene format=3 uid="uid://dtmmcr3gb7h53"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_mq37n"]
-top_radius = 1.0
-bottom_radius = 1.0
+top_radius = 2.5
+bottom_radius = 2.5
 height = 0.2
 radial_segments = 6
 
 [node name="HexTemplate" type="Node3D" unique_id=2049884079]
 
-[node name="HexTile" type="MeshInstance3D" parent="." unique_id=1542710063]
+[node name="Centro_Piso" type="MeshInstance3D" parent="." unique_id=1542710063]
 mesh = SubResource("CylinderMesh_mq37n")
+
+[node name="Pivo_0" type="Node3D" parent="." unique_id=493325512]
+
+[node name="Borda_Mesh" type="MeshInstance3D" parent="Pivo_0" unique_id=520328859]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1.965, 1, 0)
+
+[node name="Pivo_1" type="Node3D" parent="." unique_id=1745504341]
+transform = Transform3D(0.49999997, 0, 0.86602545, 0, 1, 0, -0.86602545, 0, 0.49999997, 0, 0, 0)
+
+[node name="Borda_Mesh" type="MeshInstance3D" parent="Pivo_1" unique_id=2116534285]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1.965, 1, 0)
+
+[node name="Pivo_2" type="Node3D" parent="." unique_id=89737025]
+transform = Transform3D(-0.50000006, 0, 0.8660254, 0, 1, 0, -0.8660254, 0, -0.50000006, 0, 0, 0)
+
+[node name="Borda_Mesh" type="MeshInstance3D" parent="Pivo_2" unique_id=1377511088]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1.965, 1, 0)
+
+[node name="Pivo_3" type="Node3D" parent="." unique_id=964681718]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
+
+[node name="Borda_Mesh" type="MeshInstance3D" parent="Pivo_3" unique_id=1529235691]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1.965, 1, 0)
+
+[node name="Pivo_4" type="Node3D" parent="." unique_id=664249943]
+transform = Transform3D(-0.4999999, 0, -0.86602545, 0, 1, 0, 0.86602545, 0, -0.4999999, 0, 0, 0)
+
+[node name="Borda_Mesh" type="MeshInstance3D" parent="Pivo_4" unique_id=1937352598]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1.965, 1, 0)
+
+[node name="Pivo_5" type="Node3D" parent="." unique_id=198049840]
+transform = Transform3D(0.4999999, 0, -0.86602545, 0, 1, 0, 0.86602545, 0, 0.4999999, 0, 0, 0)
+
+[node name="Borda_Mesh" type="MeshInstance3D" parent="Pivo_5" unique_id=1228086047]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1.965, 1, 0)
