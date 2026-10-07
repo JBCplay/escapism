@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://bi71c1of5q28s"]
+
+[ext_resource type="ArrayMesh" uid="uid://btey8qraf8vj8" path="res://assets/models/obj/tile_base.obj" id="1_isnw8"]
+[ext_resource type="ArrayMesh" uid="uid://bpxvpw6ko5s3i" path="res://assets/models/test/cristal-final.obj" id="2_u8ufo"]
+[ext_resource type="Material" uid="uid://coax2p6jw5lte" path="res://assets/models/test/Material_Bioma.tres" id="3_cv1qx"]
+[ext_resource type="ArrayMesh" uid="uid://b5q0dqud2pkds" path="res://assets/models/test/tile-base-final.obj" id="4_vvp0a"]
+[ext_resource type="ArrayMesh" uid="uid://clrqvjuvepo4o" path="res://assets/models/test/tile-declive-final.obj" id="5_gbyp7"]
+
+[node name="ModelVisualization" type="Node3D" unique_id=575376748]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1416702131]
+mesh = ExtResource("1_isnw8")
+
+[node name="CristalFinal" type="MeshInstance3D" parent="." unique_id=1036362335]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1578255, 0, 1.9485068)
+mesh = ExtResource("2_u8ufo")
+surface_material_override/0 = ExtResource("3_cv1qx")
+
+[node name="TileBaseFinal" type="MeshInstance3D" parent="." unique_id=656778564]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4738388, 0, 2.5033588)
+mesh = ExtResource("4_vvp0a")
+surface_material_override/0 = ExtResource("3_cv1qx")
+
+[node name="TileDecliveFinal" type="MeshInstance3D" parent="." unique_id=280612215]
+transform = Transform3D(2, 0, 0, 0, 1.5, 0, 0, 0, 2, 1.062261, 0, 2.9696205)
+mesh = ExtResource("5_gbyp7")
+surface_material_override/0 = ExtResource("3_cv1qx")

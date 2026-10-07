@@ -2,4 +2,4 @@
 
 [resource]
 left_to_right = 1.0
-size = Vector3(2, 0.5, 2.5)
+size = Vector3(0.8, 1, 1)

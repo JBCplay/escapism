@@ -1,0 +1,5 @@
+[gd_scene format=3 uid="uid://c6jrw0ul3sedb"]
+
+[ext_resource type="PackedScene" uid="uid://ru680f57kvk" path="res://legacy/observador.gltf" id="1_xpsqu"]
+
+[node name="blockbench_export" unique_id=1890048468 instance=ExtResource("1_xpsqu")]

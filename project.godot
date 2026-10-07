@@ -11,8 +11,15 @@ config_version=5
 [application]
 
 config/name="Utopia"
+run/main_scene="uid://g0w60453uwac"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
+
+[autoload]
+
+GameManager="*uid://c4m87p101l7iu"
+PartyManager="*uid://ebdbdckqk3vk"
+BattleManager="*uid://bbguhixxmvtdd"
 
 [physics]
 

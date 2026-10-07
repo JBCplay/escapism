@@ -1,0 +1,7 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://coax2p6jw5lte"]
+
+[ext_resource type="Texture2D" uid="uid://cx7evtbuh6hre" path="res://assets/models/test/Moxon-Pallet.png" id="1_dllxr"]
+
+[resource]
+albedo_texture = ExtResource("1_dllxr")
+texture_filter = 0

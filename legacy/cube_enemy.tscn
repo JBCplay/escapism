@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://rlak5opjgwdx"]
+
+[ext_resource type="Script" uid="uid://bvrrnmexwd6dk" path="res://legacy/cube_enemy_exploration.gd" id="1_n2moh"]
+[ext_resource type="ArrayMesh" uid="uid://bmto107j85k1a" path="res://legacy/EnemyCube.obj" id="2_7tjj8"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_7tjj8"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_7tjj8"]
+
+[node name="CubeBody" type="CharacterBody3D" unique_id=1929544836]
+script = ExtResource("1_n2moh")
+
+[node name="PivotVisual" type="Node3D" parent="." unique_id=1806394403]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PivotVisual" unique_id=531697803]
+mesh = ExtResource("2_7tjj8")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1828188321]
+transform = Transform3D(8, 0, 0, 0, 8, 0, 0, 0, 8, 0, 0, 0)
+shape = SubResource("BoxShape3D_7tjj8")
+
+[node name="BattleTrigger" type="Area3D" parent="." unique_id=1154952316]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BattleTrigger" unique_id=1881326815]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 0, 0)
+shape = SubResource("SphereShape3D_7tjj8")

@@ -1,16 +1,16 @@
 extends Node3D
 
 # --- CARREGAMENTO DAS MALHAS (.tres) ---
-var malha_raso = preload("res://raso.tres")
-var malha_parede = preload("res://parede.tres")
-var malha_rampa = preload("res://rampa.tres")
+var malha_raso = preload("res://legacy//raso.tres")
+var malha_parede = preload("res://legacy//parede.tres")
+var malha_rampa = preload("res://legacy//rampa.tres")
 
 # --- CONFIGURAÇÕES DO MOTOR ---
 const HASH_SIZE = 256
 const RAIO_NEVOA = 4
 const LRU_CAPACITY = 64 
-const HEX_RAIO = 2.5 
-const ALTURA_DEGRAU = 0.5
+const HEX_RAIO = 4 
+const ALTURA_DEGRAU = 0.75
 
 const LIVRE = -1
 const RASO = 0
@@ -469,29 +469,37 @@ func instanciar_sala_3d(q: int, r: int, index_hash: int, nova_identidade: int, r
 	var pos_x = espacamento * (q + float(r) / 2.0)
 	var pos_z = 1.5 * HEX_RAIO * r
 	
-	# === NOVA DIMENSÃO VERTICAL APLICADA AQUI ===
+	# 1. Posicionamos a sala no espaço 3D
 	sala_node.position = Vector3(pos_x, nivel_z * ALTURA_DEGRAU, pos_z)
 	
+	# 2. A MÁGICA MODULAR: Escalamos o tile inteiro pelas constantes do motor!
+	sala_node.scale = Vector3(HEX_RAIO, ALTURA_DEGRAU, HEX_RAIO)
+	
+	# === FÁBRICA DE BORDAS (Posições Unitárias Normalizadas) ===
 	var bordas = definicao_tiles[nova_identidade]
+	
 	for i in range(6):
 		var borda_node = sala_node.get_node("Pivo_" + str(i) + "/Borda_Mesh")
 		var tipo_borda = bordas[(i - rotacao + 6) % 6]
 		
-		# === FÁBRICA DE BORDAS (Com ajuste de Posição Dinâmico) ===
+		# Limpa as colisões velhas recicladas do LRU
+		for child in borda_node.get_children():
+			child.queue_free()
+		
 		if tipo_borda == RASO:
-			borda_node.mesh = null
-			borda_node.position = Vector3.ZERO 
+			borda_node.mesh = null # Ou malha_raso, se for usar
 		elif tipo_borda == PAREDE:
 			borda_node.mesh = malha_parede
 			borda_node.rotation_degrees.y = 90
-			# Mantém a parede fina no limite do tile
-			borda_node.position = Vector3(1.965, 1.0, 0)
+			# Posição Normalizada: Apótema (0.866) - Metade da Espessura (0.08)
+			borda_node.position = Vector3(0.786, 0.5, 0)
+			borda_node.create_trimesh_collision()
 		elif tipo_borda == RAMPA_CIMA:
 			borda_node.mesh = malha_rampa
-			borda_node.rotation_degrees.y = 0  
-			# Magia Matemática: Se a rampa tem X=2.0, colocamos o centro dela em 1.165.
-			# Assim, a ponta final dela bate perfeitamente em 2.165 (limite do hexágono) sem invadir!
-			borda_node.position = Vector3(1.165, 0.25, 0) 
+			borda_node.rotation_degrees.y = 0
+			# Posição Normalizada: Apótema (0.866) - Metade da Rampa (0.4)
+			borda_node.position = Vector3(0.466, 0.5, 0)
+			borda_node.create_trimesh_collision()
 		else:
 			borda_node.mesh = null
 			
