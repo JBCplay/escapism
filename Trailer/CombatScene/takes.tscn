@@ -1,0 +1,41 @@
+[gd_scene format=3 uid="uid://cbsttqdsm0hw2"]
+
+[ext_resource type="Script" uid="uid://bxn0bv23jfw6g" path="res://Trailer/CombatScene/camera_controler.gd" id="1_lxj43"]
+[ext_resource type="Script" uid="uid://df2pcu6ijgn5a" path="res://Trailer/CombatScene/TrailerDirector.gd" id="1_r7wfu"]
+[ext_resource type="Script" uid="uid://cbr8hf21rtnlr" path="res://Trailer/CombatScene/fake_ui.gd" id="3_8rmma"]
+
+[node name="Takes" type="Node3D" unique_id=1250590570]
+
+[node name="TrailerCombat" type="Node3D" parent="." unique_id=613664763]
+script = ExtResource("1_r7wfu")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="TrailerCombat" unique_id=420318222]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="TrailerCombat/WorldEnvironment" unique_id=1099940455]
+
+[node name="Actors" type="Node3D" parent="TrailerCombat" unique_id=1988769660]
+
+[node name="Cameras" type="Node3D" parent="TrailerCombat" unique_id=2068421211]
+script = ExtResource("1_lxj43")
+
+[node name="Cam_Wide" type="Camera3D" parent="TrailerCombat/Cameras" unique_id=587925676]
+
+[node name="Cam_Hero_Action" type="Camera3D" parent="TrailerCombat/Cameras" unique_id=237756286]
+
+[node name="Cam_Enemy_Impact" type="Camera3D" parent="TrailerCombat/Cameras" unique_id=1413070945]
+
+[node name="VFX" type="Node3D" parent="TrailerCombat" unique_id=12843785]
+
+[node name="HitParticles" type="GPUParticles3D" parent="TrailerCombat/VFX" unique_id=187216625]
+
+[node name="Director" type="AnimationPlayer" parent="TrailerCombat" unique_id=1281908049]
+
+[node name="Stage" type="Node3D" parent="TrailerCombat" unique_id=1323076890]
+
+[node name="FakeUI" type="CanvasLayer" parent="TrailerCombat" unique_id=1690783418]
+script = ExtResource("3_8rmma")
+
+[node name="AttackButton" type="Button" parent="TrailerCombat/FakeUI" unique_id=1228706516]
+offset_right = 8.0
+offset_bottom = 8.0
+text = "ATAQUE"

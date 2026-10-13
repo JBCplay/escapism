@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://b0c7ssrriq2dc"]
+
+[ext_resource type="PackedScene" uid="uid://xgnod8k17a4u" path="res://assets/models/cubito/Cubito.glb" id="1_ttcxm"]
+
+[node name="CubosErraticos" type="Node3D" unique_id=1737784832]
+
+[node name="Cubito" parent="." unique_id=1999380638 instance=ExtResource("1_ttcxm")]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -0.908919, 1.1920929e-07, 0.49069428)
+
+[node name="Cubito3" parent="." unique_id=770022730 instance=ExtResource("1_ttcxm")]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -0.908919, 1.0938886, -0.8877969)
+
+[node name="Cubito2" parent="." unique_id=272616613 instance=ExtResource("1_ttcxm")]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0.4862746, 0.70964, 0.08477235)
