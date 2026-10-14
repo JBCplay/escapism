@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://qqkfvivxkk3w"]
+
+[ext_resource type="Script" uid="uid://btfalljowca1q" path="res://vfx_base.gd" id="1_bxqbi"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_bbesc"]
+emission_shape = 1
+emission_sphere_radius = 0.2
+spread = 180.0
+initial_velocity_min = 4.0
+initial_velocity_max = 6.0
+gravity = Vector3(0, -4.5, 0)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bxqbi"]
+shading_mode = 0
+albedo_color = Color(0.50980395, 0, 0.627451, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_bbesc"]
+material = SubResource("StandardMaterial3D_bxqbi")
+size = Vector3(0.2, 0.2, 0.2)
+
+[node name="VfxBase" type="GPUParticles3D" unique_id=1537287076]
+emitting = false
+amount = 20
+lifetime = 0.6
+one_shot = true
+explosiveness = 0.9
+process_material = SubResource("ParticleProcessMaterial_bbesc")
+draw_pass_1 = SubResource("BoxMesh_bbesc")
+script = ExtResource("1_bxqbi")

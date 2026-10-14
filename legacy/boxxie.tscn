@@ -1,64 +1,18 @@
 [gd_scene format=3 uid="uid://b7e3cpbiq8nj8"]
 
-[ext_resource type="Script" uid="uid://ceemdep1252m5" path="res://boxxie.gd" id="1_qmvtw"]
+[ext_resource type="Script" uid="uid://ceemdep1252m5" path="res://legacy/player.gd" id="1_qmvtw"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_f7tfn"]
 
-[sub_resource type="BoxMesh" id="BoxMesh_f7tfn"]
-
-[sub_resource type="BoxMesh" id="BoxMesh_qmvtw"]
-
-[sub_resource type="BoxMesh" id="BoxMesh_rsh2d"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_76qtg"]
-albedo_color = Color(1, 0.18431373, 0, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_76qtg"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3cfp5"]
-albedo_color = Color(0, 0, 0, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_eal3q"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qgq8q"]
-albedo_color = Color(0.30980393, 0.30980393, 0.30980393, 1)
-
 [node name="Boxxie" type="CharacterBody3D" unique_id=5834271]
 script = ExtResource("1_qmvtw")
+personagem_selecionado = "Robot"
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=980261543]
 transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0, 0.4, 0)
 shape = SubResource("BoxShape3D_f7tfn")
 
 [node name="Visuals" type="Node3D" parent="." unique_id=1186371188]
-
-[node name="Corpo" type="MeshInstance3D" parent="Visuals" unique_id=451862210]
-transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0, 0.4, 0)
-mesh = SubResource("BoxMesh_f7tfn")
-
-[node name="Cabeça" type="MeshInstance3D" parent="Visuals" unique_id=1360272743]
-transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 1.05, 0)
-mesh = SubResource("BoxMesh_qmvtw")
-
-[node name="Nariz" type="MeshInstance3D" parent="Visuals" unique_id=1034044765]
-transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.4, 0, 1.05, -0.4)
-mesh = SubResource("BoxMesh_rsh2d")
-surface_material_override/0 = SubResource("StandardMaterial3D_76qtg")
-
-[node name="Botão Superior" type="MeshInstance3D" parent="Visuals" unique_id=1221815416]
-transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0.6, -0.45)
-mesh = SubResource("BoxMesh_76qtg")
-surface_material_override/0 = SubResource("StandardMaterial3D_3cfp5")
-
-[node name="Botão Inferior" type="MeshInstance3D" parent="Visuals" unique_id=395722247]
-transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0.3, -0.45)
-mesh = SubResource("BoxMesh_76qtg")
-surface_material_override/0 = SubResource("StandardMaterial3D_3cfp5")
-
-[node name="Espada" type="MeshInstance3D" parent="Visuals" unique_id=1333822261]
-transform = Transform3D(0.09063078, 0.33809462, 0, -0.042261828, 0.7250462, 0, 0, 0, 0.1, 0.2, 0.6, 0.45)
-mesh = SubResource("BoxMesh_eal3q")
-surface_material_override/0 = SubResource("StandardMaterial3D_qgq8q")
 
 [node name="CameraPivot" type="Node3D" parent="." unique_id=996772252]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)

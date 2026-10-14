@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://d1hnjrb7opx54"]
+
+[ext_resource type="PackedScene" uid="uid://b2d0ksig1obig" path="res://assets/models/mummy/mummy.glb" id="1_s4wm4"]
+
+[node name="Sketchfab_Scene" unique_id=128326327 instance=ExtResource("1_s4wm4")]
+
+[node name="Sketchfab_model" parent="." index="0" unique_id=2084091964]
+transform = Transform3D(-0.105554536, 9.227871e-09, 4.0336305e-16, 0, -4.6139355e-09, 0.105554536, 9.227871e-09, 0.105554536, 4.6139355e-09, 0, 0, 0)
+
+[node name="Armature_001_21" parent="Sketchfab_model/root/GLTF_SceneRootNode" parent_id_path=PackedInt32Array(349072378) index="0" unique_id=1612851263]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.74948233, 0.39607015, 0)
+
+[node name="GLTF_created_0" parent="Sketchfab_model/root/GLTF_SceneRootNode/Armature_001_21" index="0" unique_id=1185888932]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.3384383, 0)

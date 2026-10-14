@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://jg7o6djpjf6y"]
+
+[ext_resource type="PackedScene" uid="uid://c2wxu8ypldkdf" path="res://assets/models/robot/robot.glb" id="1_eq32n"]
+
+[node name="Sketchfab_Scene" unique_id=1810757601 instance=ExtResource("1_eq32n")]
+
+[node name="Sketchfab_model" parent="." index="0" unique_id=439469942]
+transform = Transform3D(1, 1.6081226e-16, -2.8327693e-16, 2.8327693e-16, 3.8285688e-16, 1, 1.6081226e-16, -1, 3.8285688e-16, 0, 0.5, 0)

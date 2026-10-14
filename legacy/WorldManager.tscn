@@ -3,9 +3,6 @@
 [ext_resource type="Script" uid="uid://kgd8tglj53aq" path="res://legacy/world_manager.gd" id="1_ahveo"]
 [ext_resource type="PackedScene" uid="uid://dtmmcr3gb7h53" path="res://legacy/HexTemplate.tscn" id="2_xytqn"]
 [ext_resource type="PackedScene" uid="uid://b7e3cpbiq8nj8" path="res://legacy/boxxie.tscn" id="3_ecnha"]
-[ext_resource type="PackedScene" uid="uid://rtkmh3nxntna" path="res://legacy/TotemEnemy.tscn" id="4_1tgr8"]
-[ext_resource type="PackedScene" path="res://legacy/FloatingCubeEnemy.tscn" id="5_x0lgj"]
-[ext_resource type="PackedScene" uid="uid://rlak5opjgwdx" path="res://legacy/cube_enemy.tscn" id="6_tqmom"]
 
 [sub_resource type="PhysicalSkyMaterial" id="PhysicalSkyMaterial_idisu"]
 
@@ -22,6 +19,7 @@ ssao_enabled = true
 
 [node name="WorldManager" type="Node3D" unique_id=412159056]
 script = ExtResource("1_ahveo")
+bioma_atual = 3
 hex_template = ExtResource("2_xytqn")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=679115716]
@@ -30,16 +28,4 @@ transform = Transform3D(0.8660254, 0.43301272, -0.24999999, 0, 0.49999997, 0.866
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1882561354]
 environment = SubResource("Environment_hxpwf")
 
-[node name="Boxxie" parent="." unique_id=5834271 instance=ExtResource("3_ecnha")]
-
-[node name="TotemEnemyV2" parent="." unique_id=2066863569 instance=ExtResource("4_1tgr8")]
-transform = Transform3D(-0.31573182, 0, -0.9488485, 0, 1, 0, 0.9488485, 0, -0.31573182, 0, 0, -5.937122)
-visible = false
-
-[node name="FloatingCubeEnemy" parent="." unique_id=700532387 instance=ExtResource("5_x0lgj")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.7541, 0.87261057, 0)
-visible = false
-
-[node name="CubeBody" parent="." unique_id=1929544836 instance=ExtResource("6_tqmom")]
-transform = Transform3D(0.3, 0, 0, 0, 0.3, 0, 0, 0, 0.3, 10, 10, 10)
-visible = false
+[node name="player" parent="." unique_id=5834271 instance=ExtResource("3_ecnha")]

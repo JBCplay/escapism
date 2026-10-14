@@ -18,6 +18,10 @@ const PAREDE = 1
 const RAMPA_CIMA = 2
 const MAX_AMOSTRAS_VALIDAS = 8 # X candidatos. Se achar 5 viáveis, para de procurar!
 
+# --- BIOMAS (Teaser) ---
+enum Bioma { DEBUG, PHOLYX, MOXON, AELYS }
+@export var bioma_atual: Bioma = Bioma.DEBUG
+
 # --- O TRADUTOR LÓGICO (O DNA DOS TILES) ---
 var definicao_tiles = {
 	0: [LIVRE, LIVRE, LIVRE, LIVRE, LIVRE, LIVRE],                   # ID 0: CORINGA (Anomalia)
@@ -89,7 +93,55 @@ func _ready():
 		lru_pool_nodes.append(nova_sala)
 		
 	print("[INIT] Motor Inicializado. Gerando visão inicial...")
+	configurar_nevoa_bioma()
 	gerar_visao_radial(jogador_q, jogador_r, RAIO_NEVOA)
+
+# --- SISTEMA DE NÉVOA MODULAR POR BIOMA ---
+func configurar_nevoa_bioma():
+	# Procura o WorldEnvironment na cena (ou cria um caso não exista)
+	var world_env: WorldEnvironment = get_node_or_null("WorldEnvironment")
+	if not world_env:
+		world_env = WorldEnvironment.new()
+		world_env.name = "WorldEnvironment"
+		add_child(world_env)
+		
+	if not world_env.environment:
+		world_env.environment = Environment.new()
+		
+	var env: Environment = world_env.environment
+	
+	# No modo DEBUG, desligamos a névoa completamente
+	if bioma_atual == Bioma.DEBUG:
+		env.fog_enabled = false
+		return
+		
+	# Ativa a névoa por profundidade (compatível com o renderizador Compatibility)
+	env.fog_enabled = true
+	env.fog_mode = Environment.FOG_MODE_DEPTH
+	env.fog_density = 1.0      # Garante 100% de opacidade no limite final
+	env.fog_sky_affect = 1.0   # Pinta o céu/horizonte com a cor da névoa para não vazar o fundo
+	env.fog_light_energy = 1.0
+	
+	# --- MATEMÁTICA MODULAR DE DISTÂNCIA ---
+	# Distância real do centro de um hexágono ao outro
+	var espacamento = sqrt(3.0) * HEX_RAIO
+	# Alcance físico até o último anel gerado
+	var limite_geracao = RAIO_NEVOA * espacamento
+	
+	# Começa bem perto do jogador, mas a curva > 1.0 mantém a névoa leve e translúcida
+	# nos primeiros tiles, ficando super densa rapidamente perto do limite_geracao!
+	env.fog_depth_begin = HEX_RAIO * 0.5
+	env.fog_depth_end = limite_geracao - (HEX_RAIO * 0.5)
+	env.fog_depth_curve = 2.2 
+	
+	# --- CORES POR BIOMA ---
+	match bioma_atual:
+		Bioma.MOXON:
+			env.fog_light_color = Color(0.30, 0.03, 0.03) # Vermelho escuro
+		Bioma.AELYS:
+			env.fog_light_color = Color(0.96, 0.94, 0.72) # Amarelo bem claro
+		Bioma.PHOLYX:
+			env.fog_light_color = Color(0.48, 0.30, 0.65) # Roxo médio-claro
 
 # --- MATEMÁTICA E CULLING ---
 func calcular_index(q: int, r: int) -> int:
@@ -458,6 +510,7 @@ func escolher_tile_compativel(requisitos: Array, q: int, r: int, meu_z: int, dir
 		return {"id": sorteado_b["id"], "rotacao": sorteado_b["rotacao"]}
 
 # --- GERAÇÃO VISUAL E LOOK-AHEAD ---
+# --- GERAÇÃO VISUAL E LOOK-AHEAD ---
 func instanciar_sala_3d(q: int, r: int, index_hash: int, nova_identidade: int, rotacao: int, nivel_z: int):
 	var pool_idx = obter_no_lru()
 	var sala_node = lru_pool_nodes[pool_idx]
@@ -475,74 +528,103 @@ func instanciar_sala_3d(q: int, r: int, index_hash: int, nova_identidade: int, r
 	# 2. A MÁGICA MODULAR: Escalamos o tile inteiro pelas constantes do motor!
 	sala_node.scale = Vector3(HEX_RAIO, ALTURA_DEGRAU, HEX_RAIO)
 	
-	# === FÁBRICA DE BORDAS (Posições Unitárias Normalizadas) ===
 	var bordas = definicao_tiles[nova_identidade]
 	
+	# === SISTEMA DE BIOMAS (Cores Dinâmicas) ===
+	var mat_base = StandardMaterial3D.new()
+	var mat_parede = null
+	var mat_rampa = null
+	
+	if bioma_atual != Bioma.DEBUG:
+		mat_parede = StandardMaterial3D.new()
+		mat_rampa = StandardMaterial3D.new()
+		
+	match bioma_atual:
+		Bioma.PHOLYX:
+			mat_base.albedo_color = Color(0.25, 0.10, 0.35)   # Roxo escuro (Base)
+			mat_rampa.albedo_color = Color(0.25, 0.10, 0.35)  # Roxo escuro (Rampa)
+			mat_parede.albedo_color = Color(0.55, 0.35, 0.70) # Roxo claro (Parede)
+			
+		Bioma.MOXON:
+			mat_parede.albedo_color = Color(0.70, 0.10, 0.10) # Vermelho (Parede)
+			mat_rampa.albedo_color = Color(0.20, 0.20, 0.20)  # Cinza escuro (Rampa)
+			
+			# Exceção: Se for ID 1 (6 x Raso), a base é vermelha
+			if nova_identidade == 1: 
+				mat_base.albedo_color = Color(0.70, 0.10, 0.10) # Vermelho
+			else:
+				mat_base.albedo_color = Color(0.20, 0.20, 0.20) # Cinza escuro
+				
+		Bioma.AELYS:
+			mat_base.albedo_color = Color(0.85, 0.75, 0.20)   # Amarelo médio (Base)
+			mat_rampa.albedo_color = Color(0.85, 0.75, 0.20)  # Amarelo médio (Rampa)
+			mat_parede.albedo_color = Color(0.60, 0.50, 0.10) # Amarelo escuro (Parede)
+			
+		Bioma.DEBUG:
+			if nova_identidade == 0:
+				mat_base.albedo_color = Color(0.0, 1.0, 1.0) # Ciano: TILE CORINGA
+			elif nova_identidade == 1:
+				mat_base.albedo_color = Color(0.4, 0.4, 0.4) # Cinza: Clareira (6 Rasos)
+			else:
+				var qtd_paredes = bordas.count(PAREDE)
+				var qtd_rampas = bordas.count(RAMPA_CIMA)
+				
+				if qtd_rampas == 0:
+					if qtd_paredes >= 5:
+						mat_base.albedo_color = Color(0.8, 0.2, 0.2) # Vermelho
+					elif qtd_paredes == 3 or qtd_paredes == 4:
+						mat_base.albedo_color = Color(0.8, 0.2, 0.8) # Roxo
+					elif qtd_paredes == 1 or qtd_paredes == 2:
+						mat_base.albedo_color = Color(0.2, 0.2, 0.8) # Azul
+				else:
+					if qtd_paredes == 0:
+						mat_base.albedo_color = Color(1.0, 0.8, 0.0) # Amarelo
+					else:
+						mat_base.albedo_color = Color(1.0, 0.5, 0.0) # Laranja
+
+	# Aplica o material no piso central
+	sala_node.get_node("Centro_Piso").material_override = mat_base
+	
+	# === FÁBRICA DE BORDAS ===
 	for i in range(6):
 		var borda_node = sala_node.get_node("Pivo_" + str(i) + "/Borda_Mesh")
 		var tipo_borda = bordas[(i - rotacao + 6) % 6]
 		
-		# Limpa as colisões velhas recicladas do LRU
+		# Limpa os colisores antigos reciclados do LRU
 		for child in borda_node.get_children():
 			child.queue_free()
+			
+		# RESET: Zera o material para limpar a cor caso a sala seja reciclada
+		borda_node.material_override = null
 		
 		if tipo_borda == RASO:
-			borda_node.mesh = null # Ou malha_raso, se for usar
+			borda_node.mesh = null
+			borda_node.position = Vector3.ZERO
+			
 		elif tipo_borda == PAREDE:
 			borda_node.mesh = malha_parede
 			borda_node.rotation_degrees.y = 90
-			# Posição Normalizada: Apótema (0.866) - Metade da Espessura (0.08)
-			borda_node.position = Vector3(0.786, 0.5, 0)
+			borda_node.position = Vector3(0.786, 0.5, 0) # Posição unitária
+			
+			if mat_parede:
+				borda_node.material_override = mat_parede
+				
 			borda_node.create_trimesh_collision()
+			
 		elif tipo_borda == RAMPA_CIMA:
 			borda_node.mesh = malha_rampa
 			borda_node.rotation_degrees.y = 0
-			# Posição Normalizada: Apótema (0.866) - Metade da Rampa (0.4)
-			borda_node.position = Vector3(0.466, 0.5, 0)
+			borda_node.position = Vector3(0.466, 0.5, 0) # Posição unitária
+			
+			if mat_rampa:
+				borda_node.material_override = mat_rampa
+				
 			borda_node.create_trimesh_collision()
+			
 		else:
 			borda_node.mesh = null
-			
-		# Limpa colisões antigas no nó do pivô antes de aplicar nova malha
-		for child in borda_node.get_children():
-			child.queue_free()
 
-		if tipo_borda == PAREDE or tipo_borda == RAMPA_CIMA:
-			# Cria automaticamente a colisão física baseada na nova posição
-			borda_node.create_trimesh_collision()
-	
-	# === SISTEMA DE CORES DINÂMICO PARA DEBUG ===
-	var material = StandardMaterial3D.new()
-	
-	if nova_identidade == 0:
-		material.albedo_color = Color(0.0, 1.0, 1.0) # Ciano: TILE CORINGA
-	elif nova_identidade == 1:
-		material.albedo_color = Color(0.4, 0.4, 0.4) # Cinza: Clareira (6 Rasos)
-	else:
-		# Conta dinamicamente as características da peça
-		var qtd_paredes = bordas.count(PAREDE)
-		var qtd_rampas = bordas.count(RAMPA_CIMA)
-		
-		if qtd_rampas == 0:
-			# --- TILES PLANOS (Sem Rampas) ---
-			if qtd_paredes >= 5:
-				material.albedo_color = Color(0.8, 0.2, 0.2) # Vermelho (Becos e Pilares Maciços)
-			elif qtd_paredes == 3 or qtd_paredes == 4:
-				material.albedo_color = Color(0.8, 0.2, 0.8) # Roxo (Curvas e Corredores fechados)
-			elif qtd_paredes == 1 or qtd_paredes == 2:
-				material.albedo_color = Color(0.2, 0.2, 0.8) # Azul (Encruzilhadas e corredores abertos)
-		else:
-			# --- TILES COM ELEVAÇÃO (Com Rampas) ---
-			if qtd_paredes == 0:
-				material.albedo_color = Color(1.0, 0.8, 0.0) # Amarelo (Rampas Livres/Abertas)
-			else:
-				# --- SUGESTÃO: Rampas com Paredes ---
-				material.albedo_color = Color(1.0, 0.5, 0.0) # Laranja (Subidas restritas/ladeadas por muros)
-				
-	sala_node.get_node("Centro_Piso").material_override = material
-	sala_node.visible = true
-		
-	sala_node.get_node("Centro_Piso").material_override = material
+	# A LINHA QUE FALTAVA: Liga a visibilidade do tile na cena!
 	sala_node.visible = true
 
 func gerar_visao_radial(jq: int, jr: int, raio: int):
@@ -616,8 +698,8 @@ func world_to_hex(pos_x: float, pos_z: float) -> Vector2i:
 
 # --- O SENSOR DE MOVIMENTO ---
 func _process(_delta):
-	if not has_node("Boxxie"): return
-	var pos_boxxie = $Boxxie.global_position
+	if not has_node("player"): return
+	var pos_boxxie = $player.global_position
 	var hex_atual = world_to_hex(pos_boxxie.x, pos_boxxie.z)
 	
 	if hex_atual.x != jogador_q or hex_atual.y != jogador_r:

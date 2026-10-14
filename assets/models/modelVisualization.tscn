@@ -1,31 +1,8 @@
 [gd_scene format=3 uid="uid://bi71c1of5q28s"]
 
-[ext_resource type="ArrayMesh" uid="uid://btey8qraf8vj8" path="res://assets/models/obj/tile_base.obj" id="1_isnw8"]
-[ext_resource type="ArrayMesh" uid="uid://bpxvpw6ko5s3i" path="res://assets/models/test/cristal-final.obj" id="2_u8ufo"]
-[ext_resource type="Material" uid="uid://coax2p6jw5lte" path="res://assets/models/test/Material_Bioma.tres" id="3_cv1qx"]
-[ext_resource type="ArrayMesh" uid="uid://b5q0dqud2pkds" path="res://assets/models/test/tile-base-final.obj" id="4_vvp0a"]
-[ext_resource type="ArrayMesh" uid="uid://clrqvjuvepo4o" path="res://assets/models/test/tile-declive-final.obj" id="5_gbyp7"]
-[ext_resource type="PackedScene" uid="uid://c2wxu8ypldkdf" path="res://assets/models/robot/robot.glb" id="6_1lyef"]
-[ext_resource type="PackedScene" uid="uid://b2v6yuapspuro" path="res://assets/models/shaman/shaman.glb" id="7_kycsc"]
-[ext_resource type="PackedScene" uid="uid://dxpgcnadba61m" path="res://assets/models/skull_knight/skull_knight.glb" id="8_2orcc"]
-[ext_resource type="PackedScene" uid="uid://cx3af4qn5i54l" path="res://assets/models/slime/slime.glb" id="9_8l6d0"]
-[ext_resource type="PackedScene" uid="uid://cqvm4sundx5b3" path="res://assets/models/low_poly_knight/low_poly_knight.glb" id="10_bi7qu"]
-[ext_resource type="PackedScene" uid="uid://juym8fjc2c5x" path="res://assets/models/ghost/ghost.glb" id="11_4hj44"]
-[ext_resource type="ArrayMesh" uid="uid://ckg5a12qlfhrr" path="res://assets/models/obj/knightStanding.obj" id="12_kycsc"]
-[ext_resource type="PackedScene" uid="uid://di14oqvgn2up7" path="res://assets/models/knight_standing/knightStanding.glb" id="13_8l6d0"]
-[ext_resource type="PackedScene" uid="uid://bhe0pxd54ey1t" path="res://assets/models/low_poly_knight_rigged/low_poly_knight_rigged.glb" id="14_bi7qu"]
-[ext_resource type="PackedScene" uid="uid://by7hvf2te2dp5" path="res://assets/models/slime_low_poly/slime_low-poly.glb" id="15_bi7qu"]
-[ext_resource type="PackedScene" uid="uid://by1kirjdtlbtl" path="res://assets/models/low_poly_eye/low_poly_eye.glb" id="16_4hj44"]
-[ext_resource type="PackedScene" uid="uid://cmj8brp34jd3" path="res://assets/models/lowpoly_golem/lowpoly_golem.glb" id="17_1tslk"]
-[ext_resource type="PackedScene" uid="uid://c00adt10bkkud" path="res://assets/models/low_poly_eyeball/low_poly_eyeball.glb" id="18_venvg"]
-[ext_resource type="PackedScene" uid="uid://dumtlhfqf85gj" path="res://assets/models/low_poly_fire/low_poly_fire.glb" id="19_tyips"]
-[ext_resource type="PackedScene" uid="uid://dbcu24gyrqwre" path="res://assets/models/low_poly_fire_for_asteroid/low_poly_fire_for_asteroid.glb" id="20_efxd3"]
-[ext_resource type="PackedScene" uid="uid://bsleqgkl4smj5" path="res://assets/models/cyborg/cyborg.glb" id="21_raqtw"]
-[ext_resource type="PackedScene" uid="uid://b2d0ksig1obig" path="res://assets/models/mummy/mummy.glb" id="22_venvg"]
-[ext_resource type="PackedScene" uid="uid://boxbfhlpunefn" path="res://assets/models/low_poly_rhinoceros_beetle/low_poly_rhinoceros_beetle.glb" id="23_efxd3"]
-[ext_resource type="PackedScene" uid="uid://byt7if5j7ata" path="res://assets/models/skeleton_melee_-_animated_game_ready/skeleton_melee_-_animated_game_ready.glb" id="24_raqtw"]
-
 [sub_resource type="Environment" id="Environment_8l6d0"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_y134b"]
 
 [node name="ModelVisualization" type="Node3D" unique_id=575376748]
 
@@ -35,82 +12,5 @@ transform = Transform3D(0.99972284, 4.6553222e-10, -0.023542315, 0.0060931994, 0
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=254987414]
 environment = SubResource("Environment_8l6d0")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1416702131]
-visible = false
-mesh = ExtResource("1_isnw8")
-
-[node name="CristalFinal" type="MeshInstance3D" parent="." unique_id=1036362335]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1578255, 0, 1.9485068)
-visible = false
-mesh = ExtResource("2_u8ufo")
-surface_material_override/0 = ExtResource("3_cv1qx")
-
-[node name="TileBaseFinal" type="MeshInstance3D" parent="." unique_id=656778564]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4738388, 0, 2.5033588)
-visible = false
-mesh = ExtResource("4_vvp0a")
-surface_material_override/0 = ExtResource("3_cv1qx")
-
-[node name="TileDecliveFinal" type="MeshInstance3D" parent="." unique_id=280612215]
-transform = Transform3D(2, 0, 0, 0, 1.5, 0, 0, 0, 2, 1.062261, 0, 2.9696205)
-visible = false
-mesh = ExtResource("5_gbyp7")
-surface_material_override/0 = ExtResource("3_cv1qx")
-
-[node name="Sketchfab_Scene" parent="." unique_id=1152932924 instance=ExtResource("6_1lyef")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.430137, 3.5246184, -1.2682991)
-
-[node name="Sketchfab_Scene2" parent="." unique_id=2112430788 instance=ExtResource("7_kycsc")]
-transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 2.937231, 0, 3)
-
-[node name="Sketchfab_Scene3" parent="." unique_id=967488480 instance=ExtResource("8_2orcc")]
-transform = Transform3D(0.025, 0, 0, 0, 0.025, 0, 0, 0, 0.025, -3.5200124, 0.21766949, 5.4174743)
-
-[node name="slime" parent="." unique_id=1809688743 instance=ExtResource("9_8l6d0")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.635851, 1.612891, 0)
-
-[node name="Sketchfab_Scene4" parent="." unique_id=1848760296 instance=ExtResource("10_bi7qu")]
-transform = Transform3D(0.02, 0, 0, 0, 0.02, 0, 0, 0, 0.02, 9.149869, 0, 5.017)
-
-[node name="Sketchfab_Scene5" parent="." unique_id=938477406 instance=ExtResource("11_4hj44")]
-transform = Transform3D(0.01, 0, 0, 0, 0.01, 0, 0, 0, 0.01, -1.0883605, 1.9056798, 2.8562756)
-
-[node name="KnightStanding" type="MeshInstance3D" parent="." unique_id=2008265916]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-mesh = ExtResource("12_kycsc")
-
-[node name="Sketchfab_Scene6" parent="." unique_id=995567546 instance=ExtResource("14_bi7qu")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9502764, 0, 7.25196)
-
-[node name="knightStanding" parent="." unique_id=536676828 instance=ExtResource("13_8l6d0")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.166169, 0, 6.981406)
-
-[node name="Sketchfab_Scene7" parent="." unique_id=1411814247 instance=ExtResource("15_bi7qu")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.497405, 4.3141675, 12.954209)
-
-[node name="Sketchfab_Scene8" parent="." unique_id=1244706558 instance=ExtResource("16_4hj44")]
-transform = Transform3D(0.52254325, 0, -0.8526128, 0, 1, 0, 0.8526128, 0, 0.52254325, -8.611151, 4.7733717, 3.1599293)
-
-[node name="Sketchfab_Scene9" parent="." unique_id=34881530 instance=ExtResource("17_1tslk")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.08873, 0, -4.4687424)
-
-[node name="Sketchfab_Scene10" parent="." unique_id=1128146221 instance=ExtResource("18_venvg")]
-transform = Transform3D(0.081096254, -0.48628253, 0.87003046, 0.9964964, 0.02164036, -0.08078889, 0.020458447, 0.87353367, 0.4863336, 4.6199737, 9.768894, 10.157283)
-
-[node name="Sketchfab_Scene11" parent="." unique_id=608748042 instance=ExtResource("19_tyips")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.0924144, 0, 3.2144737)
-
-[node name="Sketchfab_Scene12" parent="." unique_id=1321751949 instance=ExtResource("20_efxd3")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.879585, 19.940372, -30.678425)
-
-[node name="Sketchfab_Scene13" parent="." unique_id=1342953119 instance=ExtResource("21_raqtw")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.423897, 0, -14.48205)
-
-[node name="Sketchfab_Scene14" parent="." unique_id=843674473 instance=ExtResource("22_venvg")]
-transform = Transform3D(-0.87577647, 0, 0.48271686, 0, 1, 0, -0.48271686, 0, -0.87577647, -13.320318, 2.290824, 8.752037)
-
-[node name="Sketchfab_Scene15" parent="." unique_id=1014493224 instance=ExtResource("23_efxd3")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.299504, 0.82503414, 7.0176277)
-
-[node name="Sketchfab_Scene16" parent="." unique_id=656347011 instance=ExtResource("24_raqtw")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1020689, 0, 12.541888)
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=949317372]
+mesh = SubResource("BoxMesh_y134b")

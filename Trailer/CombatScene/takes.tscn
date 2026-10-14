@@ -15,6 +15,10 @@ script = ExtResource("1_r7wfu")
 
 [node name="Actors" type="Node3D" parent="TrailerCombat" unique_id=1988769660]
 
+[node name="Heroes" type="Node3D" parent="TrailerCombat/Actors" unique_id=980917897]
+
+[node name="Enemies" type="Node3D" parent="TrailerCombat/Actors" unique_id=1327895328]
+
 [node name="Cameras" type="Node3D" parent="TrailerCombat" unique_id=2068421211]
 script = ExtResource("1_lxj43")
 

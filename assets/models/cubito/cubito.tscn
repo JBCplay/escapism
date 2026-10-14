@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://7466ekd8q16t"]
+
+[ext_resource type="PackedScene" uid="uid://xgnod8k17a4u" path="res://assets/models/cubito/Cubito.glb" id="1_2pxc3"]
+
+[node name="Cubito" unique_id=1392765419 instance=ExtResource("1_2pxc3")]
+
+[node name="Cube" parent="." index="0" unique_id=29459865]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.30611703, 0)
+
+[node name="Cube_001" parent="." index="1" unique_id=909829039]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.30611703, 0)
